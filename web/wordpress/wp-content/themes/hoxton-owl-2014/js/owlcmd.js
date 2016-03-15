@@ -140,55 +140,9 @@ function sendLoadRequest(){
     sendRequest(OpenWareMidiSysexCommand.SYSEX_PARAMETER_NAME_COMMAND);
 }
 
-function onMidiInitialised(){
-
-    // auto set the input and output to an OWL
-    
-    var outConnected = false,
-        inConnected = false;
-
-    for (var o = 0; o < HoxtonOwl.midiClient.midiOutputs.length; o++) {
-        if (HoxtonOwl.midiClient.midiOutputs[o].name.match('^OWL-MIDI')) {
-            HoxtonOwl.midiClient.selectMidiOutput(o);
-            outConnected = true;
-            break;
-        }        
-    }
-
-    for (var i = 0; i < HoxtonOwl.midiClient.midiInputs.length; i++) {
-        if (HoxtonOwl.midiClient.midiInputs[i].name.match('^OWL-MIDI')) {
-            HoxtonOwl.midiClient.selectMidiInput(i);
-            inConnected = true;
-            break;
-        }        
-    }
-
-    if (inConnected && outConnected) {
-        console.log('connected to an OWL');
-        $('#ourstatus').text('Connected to an OWL')
-        $('#load-owl-button').show();
-    } else {
-        console.log('failed to connect to an OWL');
-        $('#ourstatus').text('Failed to connect to an OWL')
-        $('#load-owl-button').hide();
-    }
-
-    // sendLoadRequest(); // load patches
-    sendRequest(OpenWareMidiSysexCommand.SYSEX_FIRMWARE_VERSION);
-    statusRequestLoop();
-}
-
 function updatePermission(name, status) {
     console.log('update permission for ' + name + ' with ' + status);
     log('update permission for ' + name + ' with ' + status);
-}
-
-function connectToOwl() {
-    if(navigator && navigator.requestMIDIAccess)
-    {
-        navigator.requestMIDIAccess({sysex:true});
-    }
-    HoxtonOwl.midiClient.initialiseMidi(onMidiInitialised);
 }
 
 // function hookupButtonEvents() {

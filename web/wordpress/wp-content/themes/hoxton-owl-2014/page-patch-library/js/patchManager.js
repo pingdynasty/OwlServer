@@ -18,6 +18,52 @@ if (!HoxtonOwl) {
  */
 HoxtonOwl.patchManager = {
 
+    connectToOwl: function() {
+        if(navigator && navigator.requestMIDIAccess)
+        {
+            navigator.requestMIDIAccess({sysex:true});
+        }
+        HoxtonOwl.midiClient.initialiseMidi(HoxtonOwl.patchManager.onMidiInitialised);
+    },
+
+    onMidiInitialised: function(){
+
+        // auto set the input and output to an OWL
+        
+        var outConnected = false,
+            inConnected = false;
+
+        for (var o = 0; o < HoxtonOwl.midiClient.midiOutputs.length; o++) {
+            if (HoxtonOwl.midiClient.midiOutputs[o].name.match('^OWL-MIDI')) {
+                HoxtonOwl.midiClient.selectMidiOutput(o);
+                outConnected = true;
+                break;
+            }        
+        }
+
+        for (var i = 0; i < HoxtonOwl.midiClient.midiInputs.length; i++) {
+            if (HoxtonOwl.midiClient.midiInputs[i].name.match('^OWL-MIDI')) {
+                HoxtonOwl.midiClient.selectMidiInput(i);
+                inConnected = true;
+                break;
+            }        
+        }
+
+        if (inConnected && outConnected) {
+            console.log('connected to an OWL');
+            $('#ourstatus').text('Connected to an OWL')
+            $('#load-owl-button').show();
+        } else {
+            console.log('failed to connect to an OWL');
+            $('#ourstatus').text('Failed to connect to an OWL')
+            $('#load-owl-button').hide();
+        }
+
+        // sendLoadRequest(); // load patches
+        sendRequest(OpenWareMidiSysexCommand.SYSEX_FIRMWARE_VERSION);
+        statusRequestLoop();
+    },
+
     sortPatchesByName: function () {
 
         if ('name' === window.patchSortOrder()) {
@@ -535,11 +581,14 @@ HoxtonOwl.patchManager = {
                 // add colour to knobs for which parameters exist in this patch
                 if (patch.parameters) {
                     for (var key in patch.parameters) {
-                        console.log(key);
                         $('#patch-parameter-' + key + ' .knob').attr('data-fgColor', '#ed7800');
                     }
                 }
-                knobify();                
+                knobify();
+
+                $('#patch-tab-header-midi a').click(function(){
+                    HoxtonOwl.patchManager.connectToOwl();
+                });
 
                 // Show build download links
                 if (that.selectedPatch().sysExAvailable) {
@@ -573,7 +622,6 @@ HoxtonOwl.patchManager = {
                 function changeKnobReadOnlyState(readonly) {
                     if (patch.parameters) {
                         for (var key in patch.parameters) {
-                            console.log(key);
                             $('#patch-parameter-' + key + ' .knob').trigger('configure', {"readOnly":readonly});
                         }
                     }
