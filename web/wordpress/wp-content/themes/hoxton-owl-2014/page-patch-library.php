@@ -30,9 +30,9 @@ wp_enqueue_script('owl-patches-page_run_prettify',  'https://google-code-prettif
 //wp_enqueue_script('select2', get_template_directory_uri() . '/js/select2/js/select2.min.js', array('jquery'));
 
 
-wp_enqueue_script('midi-client',                    $resUri . 'js/midiclient.js');
-wp_enqueue_script('owl-midi-control',               $resUri . 'js/OpenWareMidiControl.js');
-wp_enqueue_script('owl-cmd',                        $resUri . 'js/owlcmd.js');
+wp_enqueue_script('midi-client',                    get_template_directory_uri() . '/js/midiclient.js');
+wp_enqueue_script('owl-midi-control',               get_template_directory_uri() . '/js/OpenWareMidiControl.js');
+wp_enqueue_script('owl-cmd',                        get_template_directory_uri() . '/js/owlcmd.js');
 
 // <script> tags to be placed just before </body>
 wp_enqueue_script('owl-api-client',                 get_template_directory_uri() . '/js/hoxtonowl-api-client.js', array('jquery'), false, true);
